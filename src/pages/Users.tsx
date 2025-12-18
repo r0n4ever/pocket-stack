@@ -14,7 +14,9 @@ import {
   Add01Icon,
   RefreshIcon,
   Search01Icon,
-  ImageAdd01Icon
+  ImageAdd01Icon,
+  ArrowLeft01Icon,
+  ArrowRight01Icon
 } from '@hugeicons/core-free-icons';
 import { pb } from '@/lib/pocketbase';
 import { cn } from '@/lib/utils';
@@ -28,6 +30,13 @@ import {
 } from '@/components/ui/dialog';
 
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface UserRecord {
   id: string;
@@ -43,6 +52,12 @@ export function Users() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(12);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+
   // Dialog state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserRecord | null>(null);
@@ -56,13 +71,25 @@ export function Users() {
     avatar: null as File | null,
   });
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (page = currentPage, limit = perPage, search = searchTerm) => {
     setLoading(true);
     try {
-      const records = await pb.collection('users').getFullList<UserRecord>({
+      const filter = search 
+        ? `(name ~ "${search}" || email ~ "${search}")` 
+        : '';
+        
+      const result = await pb.collection('users').getList<UserRecord>(page, limit, {
         sort: '-created',
+        filter: filter,
       });
-      setUsers(records);
+      
+      setUsers(result.items);
+      setTotalItems(result.totalItems);
+      setTotalPages(result.totalPages);
+      // 如果当前页超过了总页数，重置到第一页
+      if (result.totalPages > 0 && page > result.totalPages) {
+        setCurrentPage(1);
+      }
     } catch (error) {
       console.error('Failed to fetch users:', error);
     } finally {
@@ -70,9 +97,19 @@ export function Users() {
     }
   };
 
+  // 监听分页和每页数量变化
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    fetchUsers(currentPage, perPage, searchTerm);
+  }, [currentPage, perPage]);
+
+  // 搜索防抖
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCurrentPage(1); // 搜索时重置到第一页
+      fetchUsers(1, perPage, searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   const handleOpenDialog = (user?: UserRecord) => {
     if (user) {
@@ -85,7 +122,6 @@ export function Users() {
         verified: user.verified,
         avatar: null,
       });
-      // 如果用户有头像，设置预览
       if (user.avatar) {
         setAvatarPreview(`${pb.baseUrl}/api/files/users/${user.id}/${user.avatar}`);
       } else {
@@ -161,11 +197,6 @@ export function Users() {
     }
   };
 
-  const filteredUsers = users.filter(user => 
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -179,10 +210,10 @@ export function Users() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={fetchUsers} disabled={loading} className="bg-white dark:bg-neutral-950">
+          <Button variant="outline" onClick={() => fetchUsers()} disabled={loading} className="bg-white dark:bg-neutral-950">
             <HugeiconsIcon icon={RefreshIcon} className={cn("h-4 w-4", loading && "animate-spin")} />
           </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => handleOpenDialog()}>
+          <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/20" onClick={() => handleOpenDialog()}>
             <HugeiconsIcon icon={Add01Icon} className="mr-2 h-4 w-4" />
             添加用户
           </Button>
@@ -194,97 +225,166 @@ export function Users() {
         <HugeiconsIcon icon={Search01Icon} className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
         <Input
           placeholder="搜索用户名或邮箱..."
-          className="pl-9 bg-white dark:bg-neutral-950"
+          className="pl-9 bg-white dark:bg-neutral-950 h-11 ring-offset-white focus-visible:ring-blue-500"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
 
       {/* Users List */}
-      <Card className="border-none shadow-sm bg-white/50 backdrop-blur-sm dark:bg-neutral-950/50">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>用户列表 ({filteredUsers.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
-            {loading ? (
-              Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="h-48 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-900/50 animate-pulse" />
-              ))
-            ) : filteredUsers.length === 0 ? (
-              <div className="col-span-full py-12 text-center text-neutral-500">
-                暂无用户数据
+      <div className="space-y-4">
+        <div className="flex items-center justify-between px-1">
+          <h2 className="text-sm font-medium text-neutral-500">
+            用户列表 ({totalItems})
+          </h2>
+          <div className="flex items-center gap-2">
+             <span className="text-xs text-neutral-500">每页</span>
+             <Select 
+               value={perPage.toString()} 
+               onValueChange={(val) => {
+                 setPerPage(parseInt(val));
+                 setCurrentPage(1);
+               }}
+             >
+               <SelectTrigger className="h-8 w-[70px] bg-white dark:bg-neutral-950">
+                 <SelectValue placeholder={perPage} />
+               </SelectTrigger>
+               <SelectContent>
+                 <SelectItem value="12">12</SelectItem>
+                 <SelectItem value="24">24</SelectItem>
+                 <SelectItem value="48">48</SelectItem>
+                 <SelectItem value="100">100</SelectItem>
+               </SelectContent>
+             </Select>
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {loading ? (
+            Array.from({ length: perPage }).map((_, i) => (
+              <div key={i} className="h-[200px] rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/50 dark:bg-neutral-900/50 animate-pulse" />
+            ))
+          ) : users.length === 0 ? (
+            <div className="col-span-full py-20 bg-white/50 dark:bg-neutral-950/50 rounded-2xl border border-dashed border-neutral-200 dark:border-neutral-800 text-center flex flex-col items-center gap-3">
+              <div className="h-12 w-12 rounded-full bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center">
+                <HugeiconsIcon icon={Search01Icon} className="h-6 w-6 text-neutral-400" />
               </div>
-            ) : (
-              filteredUsers.map((user) => (
-                <div
-                  key={user.id}
-                  className="group relative flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-5 transition-all hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 overflow-hidden">
-                        {user.avatar ? (
-                          <img 
-                            src={`${pb.baseUrl}/api/files/users/${user.id}/${user.avatar}`} 
-                            alt={user.name} 
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <HugeiconsIcon icon={UserIcon} className="h-6 w-6" />
-                        )}
-                      </div>
-                      <div className="overflow-hidden">
-                        <h3 className="font-semibold text-neutral-900 dark:text-neutral-50 truncate">
-                          {user.name}
-                        </h3>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
-                          用户ID: {user.id}
-                        </p>
-                      </div>
+              <p className="text-neutral-500">没有发现符合条件的用户</p>
+              <Button variant="ghost" size="sm" onClick={() => setSearchTerm('')}>清除搜索</Button>
+            </div>
+          ) : (
+            users.map((user) => (
+              <div
+                key={user.id}
+                className="group relative flex flex-col gap-4 rounded-2xl border border-neutral-200 bg-white p-5 transition-all hover:shadow-xl hover:-translate-y-1 dark:border-neutral-800 dark:bg-neutral-900"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 overflow-hidden ring-2 ring-white dark:ring-neutral-800 shadow-sm">
+                      {user.avatar ? (
+                        <img 
+                          src={`${pb.baseUrl}/api/files/users/${user.id}/${user.avatar}`} 
+                          alt={user.name} 
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <HugeiconsIcon icon={UserIcon} className="h-6 w-6" />
+                      )}
                     </div>
-                    <Badge variant={user.verified ? "default" : "secondary"} className="rounded-lg shrink-0">
-                      {user.verified ? "已验证" : "待验证"}
-                    </Badge>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-300">
-                      <HugeiconsIcon icon={Mail01Icon} className="h-4 w-4 opacity-70 shrink-0" />
-                      <span className="truncate">{user.email}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-300">
-                      <HugeiconsIcon icon={Calendar01Icon} className="h-4 w-4 opacity-70 shrink-0" />
-                      <span>注册时间: {new Date(user.created).toLocaleDateString()}</span>
+                    <div className="overflow-hidden">
+                      <h3 className="font-semibold text-neutral-900 dark:text-neutral-50 truncate">
+                        {user.name}
+                      </h3>
+                      <p className="text-[10px] font-mono text-neutral-400 dark:text-neutral-500 uppercase">
+                        ID: {user.id.substring(0, 8)}...
+                      </p>
                     </div>
                   </div>
+                  <Badge 
+                    variant={user.verified ? "default" : "secondary"} 
+                    className={cn(
+                      "rounded-lg shrink-0 text-[10px] px-2 py-0",
+                      user.verified ? "bg-green-500/10 text-green-600 hover:bg-green-500/20 border-green-500/20" : ""
+                    )}
+                  >
+                    {user.verified ? "已验证" : "待验证"}
+                  </Badge>
+                </div>
 
-                  <div className="mt-auto flex items-center gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-800">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="flex-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30"
-                      onClick={() => handleOpenDialog(user)}
-                    >
-                      <HugeiconsIcon icon={PencilEdit01Icon} className="mr-2 h-4 w-4" />
-                      编辑
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="flex-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
-                      onClick={() => handleDelete(user.id)}
-                    >
-                      <HugeiconsIcon icon={Delete01Icon} className="mr-2 h-4 w-4" />
-                      删除
-                    </Button>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-300">
+                    <HugeiconsIcon icon={Mail01Icon} className="h-3.5 w-3.5 opacity-70 shrink-0" />
+                    <span className="truncate">{user.email}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-300">
+                    <HugeiconsIcon icon={Calendar01Icon} className="h-3.5 w-3.5 opacity-70 shrink-0" />
+                    <span>{new Date(user.created).toLocaleDateString()}</span>
                   </div>
                 </div>
-              ))
-            )}
+
+                <div className="mt-auto flex items-center gap-2 pt-3 border-t border-neutral-100 dark:border-neutral-800">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="flex-1 h-8 text-[11px] text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30"
+                    onClick={() => handleOpenDialog(user)}
+                  >
+                    <HugeiconsIcon icon={PencilEdit01Icon} className="mr-1.5 h-3.5 w-3.5" />
+                    编辑
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="flex-1 h-8 text-[11px] text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                    onClick={() => handleDelete(user.id)}
+                  >
+                    <HugeiconsIcon icon={Delete01Icon} className="mr-1.5 h-3.5 w-3.5" />
+                    删除
+                  </Button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Pagination UI */}
+        {totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-6 border-t border-neutral-200 dark:border-neutral-800">
+            <p className="text-xs text-neutral-500">
+              显示第 {(currentPage - 1) * perPage + 1} 到 {Math.min(currentPage * perPage, totalItems)} 条，共 {totalItems} 条用户
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 gap-1 dark:bg-neutral-950"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1 || loading}
+              >
+                <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" />
+                上一页
+              </Button>
+              
+              <div className="flex items-center gap-1 mx-2">
+                <span className="text-sm font-medium">{currentPage}</span>
+                <span className="text-sm text-neutral-400">/</span>
+                <span className="text-sm text-neutral-400">{totalPages}</span>
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 gap-1 dark:bg-neutral-950"
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages || loading}
+              >
+                下一页
+                <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        )}
+      </div>
 
       {/* Add/Edit Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -299,7 +399,7 @@ export function Users() {
             {/* Avatar Upload */}
             <div className="flex flex-col items-center justify-center gap-4 pb-4">
               <div className="relative group">
-                <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-neutral-100 dark:bg-neutral-800 overflow-hidden border-2 border-dashed border-neutral-300 dark:border-neutral-700 transition-colors group-hover:border-blue-500">
+                <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-neutral-100 dark:bg-neutral-800 overflow-hidden border-2 border-dashed border-neutral-300 dark:border-neutral-700 transition-colors group-hover:border-blue-500 shadow-inner">
                   {avatarPreview ? (
                     <img src={avatarPreview} alt="Preview" className="h-full w-full object-cover" />
                   ) : (
@@ -307,7 +407,7 @@ export function Users() {
                   )}
                   <label 
                     htmlFor="avatar-upload" 
-                    className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer backdrop-blur-[2px]"
                   >
                     <HugeiconsIcon icon={ImageAdd01Icon} className="h-6 w-6" />
                   </label>
@@ -320,15 +420,16 @@ export function Users() {
                   onChange={handleAvatarChange}
                 />
               </div>
-              <p className="text-xs text-neutral-500">点击头像更换图片</p>
+              <p className="text-[10px] text-neutral-500 bg-neutral-100 dark:bg-neutral-900 px-2 py-0.5 rounded-full">点击头像上传图片</p>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="name">用户名</Label>
+              <Label htmlFor="name" className="text-xs font-semibold uppercase tracking-wider text-neutral-500">用户名</Label>
               <Input
                 id="name"
                 autoComplete="off"
                 placeholder="例如: admin123"
+                className="h-10 border-neutral-200 dark:border-neutral-800"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
@@ -336,12 +437,13 @@ export function Users() {
             </div>
             {!editingUser && (
               <div className="grid gap-2">
-                <Label htmlFor="email">邮箱</Label>
+                <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-neutral-500">邮箱</Label>
                 <Input
                   id="email"
                   type="email"
                   autoComplete="off"
                   placeholder="name@example.com"
+                  className="h-10 border-neutral-200 dark:border-neutral-800"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   required
@@ -349,11 +451,14 @@ export function Users() {
               </div>
             )}
             <div className="grid gap-2">
-              <Label htmlFor="password">{editingUser ? '重置密码 (留空则不修改)' : '密码'}</Label>
+              <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                {editingUser ? '重置密码 (留空则不修改)' : '密码'}
+              </Label>
               <Input
                 id="password"
                 type="password"
                 autoComplete="new-password"
+                className="h-10 border-neutral-200 dark:border-neutral-800"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 required={!editingUser}
@@ -361,11 +466,12 @@ export function Users() {
             </div>
             {formData.password && (
               <div className="grid gap-2">
-                <Label htmlFor="passwordConfirm">确认密码</Label>
+                <Label htmlFor="passwordConfirm" className="text-xs font-semibold uppercase tracking-wider text-neutral-500">确认密码</Label>
                 <Input
                   id="passwordConfirm"
                   type="password"
                   autoComplete="new-password"
+                  className="h-10 border-neutral-200 dark:border-neutral-800"
                   value={formData.passwordConfirm}
                   onChange={(e) => setFormData({ ...formData, passwordConfirm: e.target.value })}
                   required
@@ -381,15 +487,15 @@ export function Users() {
               />
               <label
                 htmlFor="verified"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer text-neutral-600 dark:text-neutral-400"
               >
                 验证用户
               </label>
             </div>
 
-            <DialogFooter className="pt-4">
-              <Button type="button" variant="ghost" onClick={() => setIsDialogOpen(false)}>取消</Button>
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700">保存</Button>
+            <DialogFooter className="pt-4 gap-2">
+              <Button type="button" variant="ghost" className="flex-1" onClick={() => setIsDialogOpen(false)}>取消</Button>
+              <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">确认保存</Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -397,5 +503,6 @@ export function Users() {
     </div>
   );
 }
+
 
 
