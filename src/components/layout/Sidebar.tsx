@@ -8,10 +8,8 @@ import {
   Settings01Icon,
   ChartLineData01Icon,
   ShoppingCart01Icon,
-  Logout01Icon,
   ArrowDown01Icon,
 } from '@hugeicons/core-free-icons';
-import { useAuth } from '@/components/auth-provider';
 import { Logo } from '@/components/logo';
 
 interface MenuItem {
@@ -151,7 +149,6 @@ function NavItem({ item, location }: { item: MenuItem; location: ReturnType<type
 
 export function Sidebar() {
   const location = useLocation();
-  const { user, logout } = useAuth();
 
   return (
     <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-950">
@@ -161,35 +158,11 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="space-y-1 overflow-y-auto p-4" style={{ height: 'calc(100vh - 8rem)' }}>
+      <nav className="space-y-1 overflow-y-auto p-4" style={{ height: 'calc(100vh - 4rem)' }}>
         {menuItems.map((item, index) => (
           <NavItem key={index} item={item} location={location} />
         ))}
       </nav>
-
-      {/* Footer */}
-      <div className="absolute bottom-0 left-0 right-0 border-t border-neutral-200 p-4 dark:border-neutral-800 bg-white dark:bg-neutral-950">
-        <div className="flex items-center gap-3 rounded-lg bg-neutral-50 px-3 py-2.5 dark:bg-neutral-900 group">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white">
-            {user?.email?.charAt(0).toUpperCase() || 'A'}
-          </div>
-          <div className="flex-1 overflow-hidden">
-            <p className="truncate text-sm font-medium text-neutral-900 dark:text-neutral-50">
-              {user?.name || '超级管理员'}
-            </p>
-            <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
-              {user?.email}
-            </p>
-          </div>
-          <button 
-            onClick={logout}
-            className="text-neutral-500 hover:text-red-500 transition-colors p-1"
-            title="退出登录"
-          >
-            <HugeiconsIcon icon={Logout01Icon} className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
     </aside>
   );
 }

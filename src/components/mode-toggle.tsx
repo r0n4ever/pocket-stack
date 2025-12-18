@@ -8,10 +8,10 @@ export function ModeToggle() {
 
   return (
     <Button
-      variant="ghost"
+      variant="outline"
       size="icon"
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-      className="relative"
+      className="relative border-1 bg-white dark:bg-neutral-950"
     >
       <HugeiconsIcon
         icon={Sun01Icon}
