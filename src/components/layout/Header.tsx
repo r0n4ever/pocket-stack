@@ -80,7 +80,7 @@ export function Header({ onMenuClick, isCollapsed, onToggleSidebar }: HeaderProp
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="ml-2 flex items-center gap-3 outline-none cursor-pointer group">
+              <button className="ml-2 flex items-center gap-3 outline-none group">
                 <div className="hidden text-right md:block">
                   <p className="text-sm font-medium text-neutral-900 dark:text-neutral-50 group-hover:text-blue-600 transition-colors">
                     {user?.name || '超级管理员'}

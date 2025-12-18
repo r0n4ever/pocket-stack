@@ -105,7 +105,7 @@ function NavItem({ item, location, isCollapsed }: { item: MenuItem; location: Re
         <DropdownMenuTrigger asChild>
           <button
             className={cn(
-              'flex w-full items-center justify-center rounded-lg py-2.5 text-sm font-medium transition-all duration-200 outline-none cursor-pointer',
+              'flex w-full items-center justify-center rounded-lg py-2.5 text-sm font-medium transition-all duration-200 outline-none',
               isChildActive
                 ? 'text-blue-600 dark:text-blue-400'
                 : 'text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-900'
@@ -130,7 +130,7 @@ function NavItem({ item, location, isCollapsed }: { item: MenuItem; location: Re
               <Link
                 to={child.path}
                 className={cn(
-                  "cursor-pointer w-full",
+                  "w-full",
                   location.pathname === child.path && "text-blue-600 font-medium"
                 )}
               >
@@ -148,7 +148,7 @@ function NavItem({ item, location, isCollapsed }: { item: MenuItem; location: Re
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          'flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 outline-none cursor-pointer',
+          'flex w-full items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 outline-none',
           isChildActive
             ? 'text-blue-600 dark:text-blue-400'
             : 'text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-900'
