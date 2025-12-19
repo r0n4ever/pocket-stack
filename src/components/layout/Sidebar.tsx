@@ -8,6 +8,7 @@ import {
   Settings01Icon,
   ChartLineData01Icon,
   ShoppingCart01Icon,
+  Task01Icon,
   ArrowDown01Icon,
 } from '@hugeicons/core-free-icons';
 import { Logo } from '@/components/logo';
@@ -44,6 +45,11 @@ const menuItems: MenuItem[] = [
     path: '/users',
     icon: UserIcon,
     adminOnly: true,
+  },
+  {
+    title: '任务管理',
+    path: '/tasks',
+    icon: Task01Icon,
   },
   {
     title: '数据中心',

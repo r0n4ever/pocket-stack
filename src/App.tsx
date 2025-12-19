@@ -7,6 +7,7 @@ import { Orders } from '@/pages/orders';
 import { Documents } from '@/pages/documents';
 import { Settings } from '@/pages/settings';
 import { Profile } from '@/pages/profile';
+import { Tasks } from '@/pages/tasks';
 import { LoginPage } from '@/pages/login';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider } from '@/components/auth-provider';
@@ -29,6 +30,7 @@ export function App() {
                 } />
                 <Route path="analytics" element={<Analytics />} />
                 <Route path="orders" element={<Orders />} />
+                <Route path="tasks" element={<Tasks />} />
                 <Route path="documents" element={<Documents />} />
                 <Route path="settings" element={<Settings />} />
                 <Route path="profile" element={<Profile />} />

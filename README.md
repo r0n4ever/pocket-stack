@@ -7,12 +7,14 @@
 ## 🌟 核心特性
 
 - 🎨 **前端特性**：基于 shadcn/ui (Maia 风格) 与 Tailwind CSS v4，内置深色模式。全站采用 [HugeIcons](https://hugeicons.com/) 图标库。自适应 Desktop、Tablet 及 Mobile 布局。
-- 🚀 **后端特性**：原生集成 [PocketBase](https://pocketbase.io/)，覆盖身份验证、RBAC 及数据存储。
+- 🚀 **后端特性**：原生集成 [PocketBase](https://pocketbase.io/)，覆盖身份验证、RBAC 及数据存储。内置 JS Migration 自动化机制。
+- 📋 **业务示例**：内置个人任务管理系统，支持多状态流转、优先级设定及用户数据隔离。
 - 🎪 **身份认证**：支持“超级管理员”与“普通管理员”登录模式。
 - 🛡️ **权限控制**：
     - 路由级保护 (`ProtectedRoute`, `AdminOnlyRoute`)。
     - 侧边栏菜单根据角色动态过滤。
     - UI 自动根据权限进行降级或隐藏。
+    - 后端 API Rules 确保租户/用户级数据物理隔离。
 
 ## 🌐 技术栈
 
