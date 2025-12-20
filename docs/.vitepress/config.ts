@@ -4,6 +4,7 @@ export default {
   title: 'Pocket Stack',
   description: 'AI友好的全栈开发解决方案',
   head: [['link', { rel: 'icon', href: '/assets/pocket-stack.svg', }]],
+  assetsDir: 'assets',
   themeConfig: {
     // 主题级选项
     logo: '/assets/pocket-stack.svg',
