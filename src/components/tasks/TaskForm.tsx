@@ -89,14 +89,14 @@ export function TaskForm({ isOpen, onClose, onSuccess, task, initialDate }: Task
         // However, 'created' is usually system-managed. If we want to allow 
         // backdating, we'd need a separate 'task_date' field.
         // For now, we'll just create it normally.
-        
+
         // Find max sort_order for status to append
         const statusRecords = await pb.collection('tasks').getList(1, 1, {
-            filter: `user = "${user.id}" && status = "${formData.status}"`,
-            sort: '-sort_order'
+          filter: `user = "${user.id}" && status = "${formData.status}"`,
+          sort: '-sort_order'
         });
         const maxSortOrder = statusRecords.items[0]?.sort_order || 0;
-        
+
         await pb.collection('tasks').create({
           ...data,
           sort_order: maxSortOrder + 1000,
@@ -104,9 +104,11 @@ export function TaskForm({ isOpen, onClose, onSuccess, task, initialDate }: Task
       }
       onSuccess();
       onClose();
-    } catch (error) {
-      console.error('Failed to save task:', error);
-      alert('保存失败，请检查网络或后端配置。\n' + (error instanceof Error ? error.message : '未知错误'));
+    } catch (error: any) {
+      if (!error.isAbort) {
+        console.error('Failed to save task:', error);
+        alert('保存失败，请检查网络或后端配置。\n' + (error instanceof Error ? error.message : '未知错误'));
+      }
     } finally {
       setLoading(false);
     }
@@ -123,7 +125,7 @@ export function TaskForm({ isOpen, onClose, onSuccess, task, initialDate }: Task
             {task ? '修改现有任务的详细信息' : '添加一个新的任务到您的清单中'}
           </DialogDescription>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="p-6 space-y-5 bg-white dark:bg-neutral-900">
           <div className="space-y-2">
             <Label htmlFor="title" className="text-xs font-bold uppercase tracking-wider text-neutral-500">任务标题</Label>
@@ -136,7 +138,7 @@ export function TaskForm({ isOpen, onClose, onSuccess, task, initialDate }: Task
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="description" className="text-xs font-bold uppercase tracking-wider text-neutral-500">详细描述 (可选)</Label>
             <Textarea
@@ -147,7 +149,7 @@ export function TaskForm({ isOpen, onClose, onSuccess, task, initialDate }: Task
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             />
           </div>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="status" className="text-xs font-bold uppercase tracking-wider text-neutral-500">当前状态</Label>
@@ -165,7 +167,7 @@ export function TaskForm({ isOpen, onClose, onSuccess, task, initialDate }: Task
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="priority" className="text-xs font-bold uppercase tracking-wider text-neutral-500">优先级</Label>
               <Select
@@ -183,18 +185,18 @@ export function TaskForm({ isOpen, onClose, onSuccess, task, initialDate }: Task
               </Select>
             </div>
           </div>
-          
+
           <div className="flex justify-end gap-3 pt-4 border-t border-neutral-100 dark:border-neutral-800 mt-6">
-            <Button 
-              type="button" 
-              variant="ghost" 
-              onClick={onClose} 
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onClose}
               className="rounded-xl px-6 h-11 font-medium hover:bg-neutral-100 dark:hover:bg-neutral-800"
             >
               取消
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={loading}
               className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-8 h-11 font-bold shadow-lg shadow-blue-500/20 transition-all active:scale-95 disabled:opacity-50"
             >

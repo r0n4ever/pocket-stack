@@ -151,15 +151,18 @@ export function Tasks() {
         setTotalItems(result.totalItems);
         setTotalPages(result.totalPages);
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.isAbort) return;
       console.error('Failed to fetch tasks:', error);
       try {
         const result = await pb.collection('tasks').getList<Task>(1, 50, {
           filter: filters.join(' && '),
         });
         setTasks(result.items);
-      } catch (innerError) {
-        console.error('Critical fetch failure:', innerError);
+      } catch (innerError: any) {
+        if (!innerError.isAbort) {
+          console.error('Critical fetch failure:', innerError);
+        }
         setTasks([]);
       }
     } finally {

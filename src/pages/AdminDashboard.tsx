@@ -174,8 +174,10 @@ export function AdminDashboard() {
         })).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
         setUserTrendData(userTrendArray);
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
+      } catch (error: any) {
+        if (!error.isAbort) {
+          console.error('Failed to fetch data:', error);
+        }
       } finally {
         setLoading(false);
       }

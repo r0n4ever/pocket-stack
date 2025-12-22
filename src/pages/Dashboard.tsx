@@ -130,8 +130,10 @@ export function Dashboard() {
         })).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
         setTrendData(trendArray);
-      } catch (error) {
-        console.error('Failed to fetch tasks:', error);
+      } catch (error: any) {
+        if (!error.isAbort) {
+          console.error('Failed to fetch tasks:', error);
+        }
       } finally {
         setLoading(false);
       }

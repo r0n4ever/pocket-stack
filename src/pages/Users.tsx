@@ -90,8 +90,10 @@ export function Users() {
       if (result.totalPages > 0 && page > result.totalPages) {
         setCurrentPage(1);
       }
-    } catch (error) {
-      console.error('Failed to fetch users:', error);
+    } catch (error: any) {
+      if (!error.isAbort) {
+        console.error('Failed to fetch users:', error);
+      }
     } finally {
       setLoading(false);
     }
