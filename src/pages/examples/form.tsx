@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export function Settings() {
+export function Form() {
   return (
     <div className="space-y-6">
       <div>

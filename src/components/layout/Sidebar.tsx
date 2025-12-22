@@ -5,9 +5,8 @@ import { HugeiconsIcon } from '@hugeicons/react';
 import {
   Home01Icon,
   UserIcon,
-  Settings01Icon,
+  PrismIcon,
   ChartLineData01Icon,
-  ShoppingCart01Icon,
   Task01Icon,
   Calendar01Icon,
   ArrowDown01Icon,
@@ -68,14 +67,17 @@ const menuItems: MenuItem[] = [
     icon: Calendar01Icon,
     userOnly: true,
   },
-  // {
-  //   title: '数据中心',
-  //   icon: ChartLineData01Icon,
-  //   children: [
-  //     { title: '数据分析', path: '/analytics' },
-  //     { title: '文档中心', path: '/documents' },
-  //   ],
-  // },
+  {
+    title: '前端示例',
+    icon: PrismIcon,
+    children: [
+      { title: '仪表盘', path: '/examples/dashboard' },
+      { title: '空页面', path: '/examples/blank' },
+      { title: '表格', path: '/examples/table' },
+      { title: '卡片', path: '/examples/card' },
+      { title: '表单', path: '/examples/form' },
+    ],
+  },
   // {
   //   title: '订单管理',
   //   path: '/orders',

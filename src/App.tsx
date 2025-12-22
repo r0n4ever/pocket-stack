@@ -1,19 +1,21 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { MainLayout } from '@/components/layout';
-import { Dashboard } from '@/pages/dashboard';
+import { ThemeProvider } from '@/components/theme-provider';
+import { AuthProvider } from '@/components/auth-provider';
+import { Dashboard } from '@/pages/Dashboard';
 import { AdminDashboard } from '@/pages/AdminDashboard';
 import { Users } from '@/pages/users';
-import { Analytics } from '@/pages/analytics';
-import { Orders } from '@/pages/orders';
-import { Documents } from '@/pages/documents';
-import { Settings } from '@/pages/settings';
 import { Profile } from '@/pages/profile';
 import { Tasks } from '@/pages/tasks';
 import { CalendarPage } from '@/pages/calendar';
 import { LoginPage } from '@/pages/login';
 import { RegisterPage } from '@/pages/register';
-import { ThemeProvider } from '@/components/theme-provider';
-import { AuthProvider } from '@/components/auth-provider';
+import { ExampleDashboard } from '@/pages/examples/dashboard';
+import { ExampleTable } from '@/pages/examples/table';
+import { ExampleCard } from '@/pages/examples/card';
+import { Form } from '@/pages/examples/form';
+import { Blank } from '@/pages/examples/blank';
+
 import { ProtectedRoute, AdminOnlyRoute } from '@/components/protected-route';
 
 export function App() {
@@ -27,19 +29,22 @@ export function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<MainLayout />}>
                 <Route index element={<Dashboard />} />
-                <Route path="admin-dashboard" element={<AdminOnlyRoute><AdminDashboard /></AdminOnlyRoute>} />
+                <Route path="admin-dashboard" element={
+                  <AdminOnlyRoute><AdminDashboard /></AdminOnlyRoute>
+                } />
                 <Route path="users" element={
                   <AdminOnlyRoute>
                     <Users />
                   </AdminOnlyRoute>
                 } />
-                <Route path="analytics" element={<Analytics />} />
-                <Route path="orders" element={<Orders />} />
                 <Route path="tasks" element={<Tasks />} />
                 <Route path="calendar" element={<CalendarPage />} />
-                <Route path="documents" element={<Documents />} />
-                <Route path="settings" element={<Settings />} />
                 <Route path="profile" element={<Profile />} />
+                <Route path="examples/blank" element={<Blank />} />
+                <Route path="examples/dashboard" element={<ExampleDashboard />} />
+                <Route path="examples/table" element={<ExampleTable />} />
+                <Route path="examples/card" element={<ExampleCard />} />
+                <Route path="examples/form" element={<Form />} />
               </Route>
             </Route>
           </Routes>
