@@ -5,11 +5,11 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { HugeiconsIcon } from '@hugeicons/react';
-import { 
-  UserIcon, 
-  Mail01Icon, 
-  Calendar01Icon, 
-  Delete01Icon, 
+import {
+  UserIcon,
+  Mail01Icon,
+  Calendar01Icon,
+  Delete01Icon,
   PencilEdit01Icon,
   Add01Icon,
   RefreshIcon,
@@ -51,7 +51,7 @@ export function Users() {
   const [users, setUsers] = useState<UserRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [perPage, setPerPage] = useState(12);
@@ -74,15 +74,15 @@ export function Users() {
   const fetchUsers = async (page = currentPage, limit = perPage, search = searchTerm) => {
     setLoading(true);
     try {
-      const filter = search 
-        ? `(name ~ "${search}" || email ~ "${search}")` 
+      const filter = search
+        ? `(name ~ "${search}" || email ~ "${search}")`
         : '';
-        
+
       const result = await pb.collection('users').getList<UserRecord>(page, limit, {
         sort: '-created',
         filter: filter,
       });
-      
+
       setUsers(result.items);
       setTotalItems(result.totalItems);
       setTotalPages(result.totalPages);
@@ -162,11 +162,11 @@ export function Users() {
       const data = new FormData();
       data.append('name', formData.name);
       data.append('verified', String(formData.verified));
-      
+
       if (formData.avatar) {
         data.append('avatar', formData.avatar);
       }
-      
+
       if (formData.password) {
         data.append('password', formData.password);
         data.append('passwordConfirm', formData.passwordConfirm);
@@ -215,8 +215,8 @@ export function Users() {
           <Button variant="outline" onClick={() => fetchUsers()} disabled={loading} className="bg-white dark:bg-neutral-950">
             <HugeiconsIcon icon={RefreshIcon} className={cn("h-4 w-4", loading && "animate-spin")} />
           </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-500/20" onClick={() => handleOpenDialog()}>
-            <HugeiconsIcon icon={Add01Icon} className="mr-2 h-4 w-4" />
+          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => handleOpenDialog()}>
+            <HugeiconsIcon icon={Add01Icon} className="" />
             添加用户
           </Button>
         </div>
@@ -240,24 +240,24 @@ export function Users() {
             用户列表 ({totalItems})
           </h2>
           <div className="flex items-center gap-2">
-             <span className="text-xs text-neutral-500">每页</span>
-             <Select 
-               value={perPage.toString()} 
-               onValueChange={(val) => {
-                 setPerPage(parseInt(val));
-                 setCurrentPage(1);
-               }}
-             >
-               <SelectTrigger className="h-8 w-[70px] bg-white dark:bg-neutral-950">
-                 <SelectValue placeholder={perPage} />
-               </SelectTrigger>
-               <SelectContent>
-                 <SelectItem value="12">12</SelectItem>
-                 <SelectItem value="24">24</SelectItem>
-                 <SelectItem value="48">48</SelectItem>
-                 <SelectItem value="100">100</SelectItem>
-               </SelectContent>
-             </Select>
+            <span className="text-xs text-neutral-500">每页</span>
+            <Select
+              value={perPage.toString()}
+              onValueChange={(val) => {
+                setPerPage(parseInt(val));
+                setCurrentPage(1);
+              }}
+            >
+              <SelectTrigger className="h-8 w-[70px] bg-white dark:bg-neutral-950">
+                <SelectValue placeholder={perPage} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="12">12</SelectItem>
+                <SelectItem value="24">24</SelectItem>
+                <SelectItem value="48">48</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -284,9 +284,9 @@ export function Users() {
                   <div className="flex items-center gap-3">
                     <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 overflow-hidden ring-2 ring-white dark:ring-neutral-800 shadow-sm">
                       {user.avatar ? (
-                        <img 
-                          src={`${pb.baseUrl}/api/files/users/${user.id}/${user.avatar}`} 
-                          alt={user.name} 
+                        <img
+                          src={`${pb.baseUrl}/api/files/users/${user.id}/${user.avatar}`}
+                          alt={user.name}
                           className="h-full w-full object-cover"
                         />
                       ) : (
@@ -302,8 +302,8 @@ export function Users() {
                       </p>
                     </div>
                   </div>
-                  <Badge 
-                    variant={user.verified ? "default" : "secondary"} 
+                  <Badge
+                    variant={user.verified ? "default" : "secondary"}
                     className={cn(
                       "rounded-lg shrink-0 text-[10px] px-2 py-0",
                       user.verified ? "bg-green-500/10 text-green-600 hover:bg-green-500/20 border-green-500/20" : ""
@@ -325,18 +325,18 @@ export function Users() {
                 </div>
 
                 <div className="mt-auto flex items-center gap-2 pt-3 border-t border-neutral-100 dark:border-neutral-800">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className="flex-1 h-8 text-[11px] text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30"
                     onClick={() => handleOpenDialog(user)}
                   >
                     <HugeiconsIcon icon={PencilEdit01Icon} className="mr-1.5 h-3.5 w-3.5" />
                     编辑
                   </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className="flex-1 h-8 text-[11px] text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
                     onClick={() => handleDelete(user.id)}
                   >
@@ -366,7 +366,7 @@ export function Users() {
                 <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" />
                 上一页
               </Button>
-              
+
               <div className="flex items-center gap-1 mx-2">
                 <span className="text-sm font-medium">{currentPage}</span>
                 <span className="text-sm text-neutral-400">/</span>
@@ -407,8 +407,8 @@ export function Users() {
                   ) : (
                     <HugeiconsIcon icon={UserIcon} className="h-10 w-10 text-neutral-400" />
                   )}
-                  <label 
-                    htmlFor="avatar-upload" 
+                  <label
+                    htmlFor="avatar-upload"
                     className="absolute inset-0 flex items-center justify-center bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer backdrop-blur-[2px]"
                   >
                     <HugeiconsIcon icon={ImageAdd01Icon} className="h-6 w-6" />
@@ -480,10 +480,10 @@ export function Users() {
                 />
               </div>
             )}
-            
+
             <div className="flex items-center space-x-2 py-2">
-              <Checkbox 
-                id="verified" 
+              <Checkbox
+                id="verified"
                 checked={formData.verified}
                 onCheckedChange={(checked) => setFormData({ ...formData, verified: checked === true })}
               />
@@ -507,4 +507,4 @@ export function Users() {
 }
 
 
-
+

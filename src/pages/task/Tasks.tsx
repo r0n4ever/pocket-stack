@@ -330,7 +330,7 @@ export function Tasks() {
             size="icon"
             onClick={() => setIsFullscreen(!isFullscreen)}
             className={cn(
-              "h-10 w-10 rounded-xl transition-all active:scale-95 border-neutral-200 dark:border-neutral-800",
+              "rounded-2xl transition-all active:scale-95 border-neutral-200 dark:border-neutral-800",
               isFullscreen ? "bg-blue-50 text-blue-600 border-blue-200" : "bg-white dark:bg-neutral-950 text-neutral-600"
             )}
             title={isFullscreen ? "退出全屏" : "全屏模式"}
@@ -341,7 +341,7 @@ export function Tasks() {
             variant="outline"
             size="icon"
             onClick={() => setViewMode(viewMode === 'table' ? 'kanban' : 'table')}
-            className="h-10 w-10 rounded-xl transition-all bg-white dark:bg-neutral-950 text-neutral-600 border-neutral-200 dark:border-neutral-800 active:scale-95"
+            className="rounded-2xl transition-all bg-white dark:bg-neutral-950 text-neutral-600 border-neutral-200 dark:border-neutral-800 active:scale-95"
             title={viewMode === 'table' ? "切换至看板模式" : "切换至表格视图"}
           >
             <HugeiconsIcon
@@ -349,10 +349,10 @@ export function Tasks() {
               className="h-4 w-4"
             />
           </Button>
-          <Button variant="outline" size="icon" onClick={() => fetchTasks()} disabled={loading} className="rounded-xl h-10 w-10 bg-white dark:bg-neutral-950 transition-all active:scale-95">
+          <Button variant="outline" size="icon" onClick={() => fetchTasks()} disabled={loading} className="rounded-2xl bg-white dark:bg-neutral-950 transition-all active:scale-95">
             <HugeiconsIcon icon={RefreshIcon} className={cn("h-4 w-4", loading && "animate-spin")} />
           </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-10 px-5 shadow-lg shadow-blue-500/20 transition-all active:scale-95" onClick={() => handleOpenDialog()}>
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-blue-500/20 transition-all active:scale-95" onClick={() => handleOpenDialog()}>
             <HugeiconsIcon icon={Add01Icon} className="mr-2 h-4 w-4" />
             新建任务
           </Button>

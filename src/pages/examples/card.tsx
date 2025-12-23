@@ -245,7 +245,7 @@ export function ExampleCard() {
           </h1>
         </div>
         <div className="flex items-center gap-3">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 px-6 rounded-xl shadow-lg shadow-blue-100 dark:shadow-none transition-all hover:scale-[1.02] active:scale-[0.98]">
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 rounded-2xl dark:shadow-none transition-all hover:scale-[1.02] active:scale-[0.98]">
             <HugeiconsIcon icon={PlusSignIcon} size={18} /> 上传文档
           </Button>
         </div>
@@ -253,12 +253,12 @@ export function ExampleCard() {
 
       {/* Filter Section */}
       <Card className="border-none dark:bg-neutral-900/50 p-1 rounded-2xl">
-        <CardContent className="p-3 flex flex-col md:flex-row items-center gap-4">
+        <CardContent className="p-2 flex flex-col md:flex-row items-center gap-4">
           <div className="relative flex-1 w-full">
-            <HugeiconsIcon icon={Search01Icon} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 h-5 w-5" />
+            <HugeiconsIcon icon={Search01Icon} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 h-4 w-4" />
             <Input
               placeholder="搜索文档名称..."
-              className="pl-11 h-11 bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 rounded-xl focus:ring-2 focus:ring-blue-500/20 transition-all"
+              className="pl-11 bg-white dark:bg-neutral-900 border-neutral-200 dark:border-neutral-800 rounded-2xl focus:ring-2 focus:ring-blue-500/20 transition-all"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />

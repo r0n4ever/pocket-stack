@@ -161,19 +161,19 @@ export function CalendarPage() {
                 </div>
                 <div className="flex items-center gap-3">
                     {/* 日历导航组 */}
-                    <div className="flex items-center bg-white dark:bg-neutral-950 rounded-2xl p-1 border border-neutral-200 dark:border-neutral-800">
+                    <div className="flex items-center bg-white dark:bg-neutral-950 rounded-2xl border border-neutral-200 dark:border-neutral-800">
                         <div className="flex items-center gap-1">
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all text-neutral-600 dark:text-neutral-400"
+                                className="rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all text-neutral-600 dark:text-neutral-400"
                                 onClick={prevMonth}
                             >
-                                <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" />
+                                <HugeiconsIcon icon={ArrowLeft01Icon} />
                             </Button>
                             <Button
                                 variant="ghost"
-                                className="h-8 rounded-xl px-3 text-xs font-bold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all text-neutral-700 dark:text-neutral-300"
+                                className="rounded-xl px-3 text-xs font-bold hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all text-neutral-700 dark:text-neutral-300"
                                 onClick={goToToday}
                             >
                                 今天
@@ -181,21 +181,21 @@ export function CalendarPage() {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-8 w-8 rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all text-neutral-600 dark:text-neutral-400"
+                                className="rounded-xl hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all text-neutral-600 dark:text-neutral-400"
                                 onClick={nextMonth}
                             >
-                                <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
+                                <HugeiconsIcon icon={ArrowRight01Icon} />
                             </Button>
                         </div>
-                        <div className="mx-2 h-4 w-[1px] bg-neutral-200 dark:bg-neutral-800" />
-                        <h2 className="text-sm font-bold text-neutral-800 dark:text-neutral-200 min-w-[110px] text-center px-2">
+                        <div className="bg-neutral-200 dark:bg-neutral-800" />
+                        <h2 className="text-sm text-neutral-800 dark:text-neutral-200 min-w-[110px] text-center px-2">
                             {format(currentDate, 'yyyy年 MMMM', { locale: zhCN })}
                         </h2>
                     </div>
 
                     <Button
                         onClick={handleCreateTask}
-                        className="bg-blue-600 hover:bg-blue-700 text-white rounded-2xl h-10 px-5 shadow-lg shadow-blue-500/20 transition-all active:scale-95 font-bold"
+                        className="bg-blue-600 hover:bg-blue-700 text-white rounded-2xl transition-all active:scale-95 font-bold"
                     >
                         <HugeiconsIcon icon={Add01Icon} className="mr-2 h-4 w-4 stroke-2" />
                         新建任务
