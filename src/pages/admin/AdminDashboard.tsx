@@ -27,6 +27,7 @@ interface User {
   id: string;
   email: string;
   name: string;
+  avatar?: string;
   created: string;
   updated: string;
 }
@@ -323,10 +324,10 @@ export function AdminDashboard() {
                       dataKey="value"
                       animationDuration={1500}
                       animationBegin={200}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                      label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(1)}%`}
                       labelLine={false}
                     >
-                      {statusData.map((entry, index) => (
+                      {statusData.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={`url(#gradient-${index})`} stroke="#ffffff" strokeWidth={2} />
                       ))}
                     </Pie>

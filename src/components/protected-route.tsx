@@ -2,7 +2,7 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from './auth-provider';
 
 export function ProtectedRoute() {
-  const { isValid, isLoading, isSuperAdmin } = useAuth();
+  const { isValid, isLoading } = useAuth();
   const location = useLocation();
 
   if (isLoading) {

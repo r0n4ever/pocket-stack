@@ -126,6 +126,7 @@ export function CalendarPage() {
         const map: Record<string, Task[]> = {};
         tasks.forEach(task => {
             // Use local date for grouping to match the calendar display
+            if (!task.created) return;
             const dateKey = format(parseISO(task.created), 'yyyy-MM-dd');
             if (!map[dateKey]) map[dateKey] = [];
             map[dateKey].push(task);

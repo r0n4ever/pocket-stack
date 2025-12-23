@@ -40,7 +40,7 @@ interface TaskFormProps {
   initialDate?: Date;
 }
 
-export function TaskForm({ isOpen, onClose, onSuccess, task, initialDate }: TaskFormProps) {
+export function TaskForm({ isOpen, onClose, onSuccess, task }: TaskFormProps) {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
     title: '',

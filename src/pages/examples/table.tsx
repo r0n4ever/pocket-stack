@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +17,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import {
@@ -28,7 +27,6 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  ShoppingCart01Icon,
   Search01Icon,
   FilterIcon,
   Calendar01Icon,

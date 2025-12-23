@@ -14,18 +14,16 @@ import {
   MoreHorizontalIcon,
 } from '@hugeicons/core-free-icons';
 import {
-  Area,
-  AreaChart,
-  ResponsiveContainer,
-  Tooltip,
   XAxis,
   YAxis,
   CartesianGrid,
-  Bar,
-  BarChart,
-  Cell,
-  Pie,
+  Tooltip,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
   PieChart,
+  Pie,
+  Cell,
 } from 'recharts';
 import { cn } from '@/lib/utils';
 

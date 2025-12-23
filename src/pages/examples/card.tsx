@@ -1,10 +1,9 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   ArrowLeft01Icon,
   ArrowRight01Icon,
   Search01Icon,
-  FilterIcon,
   Download01Icon,
   Share01Icon,
   MoreVerticalIcon,
@@ -13,7 +12,6 @@ import {
   Doc01Icon,
   Image01Icon,
   PlusSignIcon,
-  Folder01Icon,
   Delete02Icon,
   PencilEdit01Icon,
   CheckmarkCircle01Icon,
