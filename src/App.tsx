@@ -16,6 +16,7 @@ import { ExampleTable } from '@/pages/examples/Table';
 import { ExampleCard } from '@/pages/examples/Card';
 import { Form } from '@/pages/examples/Form';
 import { Blank } from '@/pages/examples/Blank';
+import { BlogDetail } from '@/pages/examples/BlogDetail';
 
 import { ProtectedRoute, AdminOnlyRoute } from '@/components/protected-route';
 
@@ -46,6 +47,7 @@ export function App() {
                 <Route path="examples/table" element={<ExampleTable />} />
                 <Route path="examples/card" element={<ExampleCard />} />
                 <Route path="examples/form" element={<Form />} />
+                <Route path="examples/blog-detail" element={<BlogDetail />} />
               </Route>
             </Route>
             <Route path="*" element={<NotFound />} />
