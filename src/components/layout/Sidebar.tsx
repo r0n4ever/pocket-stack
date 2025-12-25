@@ -9,6 +9,7 @@ import {
   ChartLineData01Icon,
   Task01Icon,
   Calendar01Icon,
+  Building01Icon,
   ArrowDown01Icon,
 } from '@hugeicons/core-free-icons';
 import { Logo } from '@/components/logo';
@@ -66,6 +67,14 @@ const menuItems: MenuItem[] = [
     path: '/calendar',
     icon: Calendar01Icon,
     userOnly: true,
+  },
+  {
+    title: 'CRM管理',
+    icon: Building01Icon,
+    userOnly: true,
+    children: [
+      { title: '客户单位', path: '/crm/companies' },
+    ],
   },
   {
     title: '前端示例',

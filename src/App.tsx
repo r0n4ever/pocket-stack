@@ -17,12 +17,15 @@ import { ExampleCard } from '@/pages/examples/Card';
 import { Form } from '@/pages/examples/Form';
 import { Blank } from '@/pages/examples/Blank';
 import { BlogDetail } from '@/pages/examples/BlogDetail';
+import Companies from '@/pages/crm/Companies';
+import { Toaster } from 'sonner';
 
 import { ProtectedRoute, AdminOnlyRoute } from '@/components/protected-route';
 
 export function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+      <Toaster position="top-center" richColors />
       <AuthProvider>
         <BrowserRouter>
           <Routes>
@@ -42,6 +45,7 @@ export function App() {
                 <Route path="tasks" element={<Tasks />} />
                 <Route path="calendar" element={<CalendarPage />} />
                 <Route path="profile" element={<Profile />} />
+                <Route path="crm/companies" element={<Companies />} />
                 <Route path="examples/blank" element={<Blank />} />
                 <Route path="examples/dashboard" element={<ExampleDashboard />} />
                 <Route path="examples/table" element={<ExampleTable />} />
