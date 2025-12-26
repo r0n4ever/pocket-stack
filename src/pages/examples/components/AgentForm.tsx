@@ -72,7 +72,7 @@ export function AgentForm({ open, onOpenChange, agentId, onSuccess }: AgentFormP
             });
             reset(record);
             if (record.avatar) {
-                setPreviewUrl(pb.files.getUrl(record, record.avatar));
+                setPreviewUrl(pb.files.getURL(record, record.avatar));
             }
         } catch (error) {
             toast.error('获取智能体信息失败');

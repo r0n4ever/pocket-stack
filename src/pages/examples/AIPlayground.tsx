@@ -184,54 +184,39 @@ export function AIPlayground() {
       });
       setMessages(prev => [...prev, userMsg as any]);
 
-      // 2. Simulate AI response (DeepSeek or other LLM)
+      // 2. Call AI via PocketBase Proxy
       try {
-        const apiKey = getSetting('ai_api_key');
-        const apiUrl = getSetting('ai_api_url', 'https://api.deepseek.com/v1/chat/completions');
-        const model = getSetting('ai_model', 'deepseek-chat');
+        const proxyUrl = `${import.meta.env.VITE_POCKETBASE_URL || 'http://127.0.0.1:8090'}/proxy/ali-llm/compatible-mode/v1/chat/completions`;
 
-        if (apiKey) {
-          const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-              model: model,
-              messages: [
-                { role: 'system', content: currentSession.expand?.agent_id?.system_prompt || 'You are a helpful assistant.' },
-                ...messages.map(m => ({ role: m.role, content: m.content })),
-                { role: 'user', content: userContent }
-              ],
-              stream: false
-            })
-          });
+        const response = await fetch(proxyUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messages: [
+              { role: 'system', content: currentSession.expand?.agent_id?.system_prompt || 'You are a helpful assistant.' },
+              ...messages.map(m => ({ role: m.role, content: m.content })),
+              { role: 'user', content: userContent }
+            ],
+            stream: false
+          })
+        });
 
-          if (!response.ok) throw new Error('AI 响应错误');
-
-          const result = await response.json();
-          const aiContent = result.choices[0].message.content;
-
-          const aiMsg = await pb.collection('ai_chat_messages').create({
-            session_id: currentSession.id,
-            role: 'assistant',
-            content: aiContent,
-          });
-          setMessages(prev => [...prev, aiMsg as any]);
-        } else {
-          // Fallback to simulation if no API key
-          setTimeout(async () => {
-            const aiMsg = await pb.collection('ai_chat_messages').create({
-              session_id: currentSession.id,
-              role: 'assistant',
-              content: `[模拟回复] 请在系统配置中设置 ai_api_key 以启用真实大模型对话。集成后，这里将显示来自 ${currentSession.expand?.agent_id?.name || '智能体'} 的真实响应。`,
-            });
-            setMessages(prev => [...prev, aiMsg as any]);
-            setIsLoading(false);
-          }, 1000);
-          return;
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || 'AI 响应错误');
         }
+
+        const result = await response.json();
+        const aiContent = result.choices[0].message.content;
+
+        const aiMsg = await pb.collection('ai_chat_messages').create({
+          session_id: currentSession.id,
+          role: 'assistant',
+          content: aiContent,
+        });
+        setMessages(prev => [...prev, aiMsg as any]);
       } catch (err) {
         console.error('LLM API Error:', err);
         toast.error('大模型调用失败');
@@ -293,7 +278,7 @@ export function AIPlayground() {
               >
                 <div className="flex-shrink-0">
                   <Avatar className="h-10 w-10 border border-neutral-200 dark:border-neutral-700">
-                    <AvatarImage src={session.expand?.agent_id.avatar ? pb.files.getUrl(session.expand.agent_id, session.expand.agent_id.avatar) : ''} />
+                    <AvatarImage src={session.expand?.agent_id.avatar ? pb.files.getURL(session.expand.agent_id, session.expand.agent_id.avatar) : ''} />
                     <AvatarFallback className="bg-blue-100 text-blue-600">
                       {session.expand?.agent_id.name[0]}
                     </AvatarFallback>
@@ -483,7 +468,7 @@ export function AIPlayground() {
                   <CardContent>
                     <div className="flex items-center gap-4 mb-4">
                       <Avatar className="h-12 w-12 ring-2 ring-neutral-50 dark:ring-neutral-800">
-                        <AvatarImage src={agent.avatar ? pb.files.getUrl(agent, agent.avatar) : ''} />
+                        <AvatarImage src={agent.avatar ? pb.files.getURL(agent, agent.avatar) : ''} />
                         <AvatarFallback className="bg-blue-100 text-blue-600">
                           {agent.name[0]}
                         </AvatarFallback>

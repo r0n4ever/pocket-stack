@@ -160,7 +160,7 @@ export function AIAgents() {
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
-                          <AvatarImage src={agent.avatar ? pb.files.getUrl(agent, agent.avatar) : ''} />
+                          <AvatarImage src={agent.avatar ? pb.files.getURL(agent, agent.avatar) : ''} />
                           <AvatarFallback>
                             <HugeiconsIcon icon={RobotIcon} className="h-4 w-4" />
                           </AvatarFallback>
