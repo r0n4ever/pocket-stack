@@ -16,6 +16,7 @@ import {
   RobotIcon,
   AiChat02Icon,
   LeftToRightListNumberIcon,
+  Copy01Icon,
 } from '@hugeicons/core-free-icons';
 import { pb } from '@/lib/pocketbase';
 import { useAuth } from '@/components/auth-provider';
@@ -23,6 +24,8 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 import { useSettings } from '@/lib/use-settings';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Agent {
   id: string;
@@ -59,8 +62,20 @@ export function AIPlayground() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [copyingId, setCopyingId] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleCopy = async (text: string, id: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyingId(id);
+      toast.success('已复制到剪贴板');
+      setTimeout(() => setCopyingId(null), 2000);
+    } catch (err) {
+      toast.error('复制失败');
+    }
+  };
 
   useEffect(() => {
     fetchAgents();
@@ -176,17 +191,26 @@ export function AIPlayground() {
     setIsLoading(true);
 
     try {
-      // 1. Save user message
-      const userMsg = await pb.collection('ai_chat_messages').create({
+      // 1. Prepare UI immediately
+      const tempUserMsg: ChatMessage = {
+        id: 'temp-user-' + Date.now(),
+        role: 'user',
+        content: userContent,
+        created: new Date().toISOString(),
+      };
+      setMessages(prev => [...prev, tempUserMsg]);
+
+      // 2. Start saving user message and calling AI in parallel
+      const saveUserMsgPromise = pb.collection('ai_chat_messages').create({
         session_id: currentSession.id,
         role: 'user',
         content: userContent,
       });
-      setMessages(prev => [...prev, userMsg as any]);
 
-      // 2. Call AI via PocketBase Proxy
+      // 3. Call AI via Vite Proxy
       try {
-        const proxyUrl = `${import.meta.env.VITE_POCKETBASE_URL || 'http://127.0.0.1:8090'}/proxy/ali-llm/compatible-mode/v1/chat/completions`;
+        const proxyUrl = '/api/llm/chat/completions';
+        const model = import.meta.env.VITE_ALI_LLM_MODEL || 'qwen-turbo';
 
         const response = await fetch(proxyUrl, {
           method: 'POST',
@@ -194,12 +218,13 @@ export function AIPlayground() {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
+            model: model,
             messages: [
               { role: 'system', content: currentSession.expand?.agent_id?.system_prompt || 'You are a helpful assistant.' },
               ...messages.map(m => ({ role: m.role, content: m.content })),
               { role: 'user', content: userContent }
             ],
-            stream: false
+            stream: true // Enable streaming
           })
         });
 
@@ -208,15 +233,81 @@ export function AIPlayground() {
           throw new Error(errorData.message || 'AI 响应错误');
         }
 
-        const result = await response.json();
-        const aiContent = result.choices[0].message.content;
+        // Wait for user message to be saved to replace temp ID (optional, but good for consistency)
+        const savedUserMsg = await saveUserMsgPromise;
+        setMessages(prev => prev.map(msg => msg.id === tempUserMsg.id ? (savedUserMsg as any) : msg));
 
+        // Initialize empty assistant message
+        let aiContent = '';
+        // Create a temporary message in UI state to show streaming content
+        const tempMsgId = 'temp-ai-' + Date.now();
+        const tempMsg: ChatMessage = {
+          id: tempMsgId,
+          role: 'assistant',
+          content: '',
+          created: new Date().toISOString()
+        };
+        setMessages(prev => [...prev, tempMsg]);
+
+        // Process the stream
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value, { stream: true });
+            buffer += chunk;
+
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || ''; // Keep the last incomplete line in buffer
+
+            for (const line of lines) {
+              const trimmedLine = line.trim();
+              if (!trimmedLine || !trimmedLine.startsWith('data: ')) continue;
+
+              const data = trimmedLine.slice(6);
+              if (data === '[DONE]') continue;
+
+              try {
+                const parsed = JSON.parse(data);
+                const content = parsed.choices[0]?.delta?.content || '';
+                if (content) {
+                  aiContent += content;
+                  // Update UI with accumulated content
+                  const currentContent = aiContent; // Capture current state of aiContent
+                  setMessages(prev => {
+                    const lastMsg = prev[prev.length - 1];
+                    if (lastMsg && lastMsg.id === tempMsgId) {
+                      return [...prev.slice(0, -1), { ...lastMsg, content: currentContent }];
+                    }
+                    return prev;
+                  });
+                }
+              } catch (e) {
+                console.error('Error parsing stream chunk:', e);
+              }
+            }
+          }
+        }
+
+        // Save the final complete message to database
         const aiMsg = await pb.collection('ai_chat_messages').create({
           session_id: currentSession.id,
           role: 'assistant',
           content: aiContent,
         });
-        setMessages(prev => [...prev, aiMsg as any]);
+
+        // Replace temp message with actual database record
+        setMessages(prev => prev.map(msg =>
+          msg.id === tempMsgId
+            ? (aiMsg as any)
+            : msg
+        ));
+
       } catch (err) {
         console.error('LLM API Error:', err);
         toast.error('大模型调用失败');
@@ -361,63 +452,95 @@ export function AIPlayground() {
             {/* Messages */}
             <ScrollArea className="flex-1 p-4" ref={scrollRef}>
               <div className="max-w-3xl mx-auto space-y-6">
-                {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={cn(
-                      "flex gap-4",
-                      msg.role === 'user' ? "flex-row-reverse" : "flex-row"
-                    )}
-                  >
-                    <Avatar className="h-9 w-9 flex-shrink-0">
-                      {msg.role === 'user' ? (
-                        <>
-                          <AvatarImage src={user?.avatar ? pb.files.getURL(user, user.avatar) : ''} />
-                          <AvatarFallback className="bg-neutral-200 dark:bg-neutral-800">
-                            <HugeiconsIcon icon={UserIcon} className="h-5 w-5" />
-                          </AvatarFallback>
-                        </>
-                      ) : (
-                        <>
-                          <AvatarImage src={currentSession.expand?.agent_id.avatar ? pb.files.getURL(currentSession.expand.agent_id, currentSession.expand.agent_id.avatar) : ''} />
-                          <AvatarFallback className="bg-blue-100 text-blue-600">
-                            <HugeiconsIcon icon={RobotIcon} className="h-5 w-5" />
-                          </AvatarFallback>
-                        </>
+                {messages.map((msg, index) => {
+                  const isLast = index === messages.length - 1;
+                  const showLoading = isLast && isLoading && msg.role === 'assistant';
+
+                  return (
+                    <div
+                      key={msg.id}
+                      className={cn(
+                        "flex gap-4",
+                        msg.role === 'user' ? "flex-row-reverse" : "flex-row"
                       )}
-                    </Avatar>
-                    <div className={cn(
-                      "flex flex-col gap-1 max-w-[80%]",
-                      msg.role === 'user' ? "items-end" : "items-start"
-                    )}>
+                    >
+                      <Avatar className="h-9 w-9 flex-shrink-0">
+                        {msg.role === 'user' ? (
+                          <>
+                            <AvatarImage src={user?.avatar ? pb.files.getURL(user, user.avatar) : ''} />
+                            <AvatarFallback className="bg-neutral-200 dark:bg-neutral-800">
+                              <HugeiconsIcon icon={UserIcon} className="h-5 w-5" />
+                            </AvatarFallback>
+                          </>
+                        ) : (
+                          <>
+                            <AvatarImage src={currentSession.expand?.agent_id.avatar ? pb.files.getURL(currentSession.expand.agent_id, currentSession.expand.agent_id.avatar) : ''} />
+                            <AvatarFallback className="bg-blue-100 text-blue-600">
+                              <HugeiconsIcon icon={RobotIcon} className="h-5 w-5" />
+                            </AvatarFallback>
+                          </>
+                        )}
+                      </Avatar>
                       <div className={cn(
-                        "px-4 py-3 rounded-2xl text-sm leading-relaxed",
-                        msg.role === 'user'
-                          ? "bg-blue-600 text-white rounded-tr-none shadow-sm"
-                          : "bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 rounded-tl-none shadow-sm"
+                        "flex flex-col gap-1 max-w-[80%]",
+                        msg.role === 'user' ? "items-end" : "items-start"
                       )}>
-                        {msg.content}
+                        <div className={cn(
+                          "px-4 py-3 rounded-2xl text-sm leading-relaxed relative overflow-hidden group/bubble",
+                          msg.role === 'user'
+                            ? "bg-blue-600 text-white rounded-tr-none shadow-sm"
+                            : "bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200 rounded-tl-none shadow-sm prose dark:prose-invert prose-sm max-w-none"
+                        )}>
+                          {msg.role === 'assistant' ? (
+                            <>
+                              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {msg.content}
+                              </ReactMarkdown>
+                              {showLoading && (
+                                <div className={cn(
+                                  "flex items-center gap-1.5 mt-2 pt-2 border-t border-neutral-100 dark:border-neutral-800 animate-in fade-in duration-500",
+                                  !msg.content && "border-none mt-0 pt-0"
+                                )}>
+                                  <div className="flex gap-1">
+                                    <span className="w-1 h-1 bg-blue-500 dark:bg-blue-400 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                                    <span className="w-1 h-1 bg-blue-500 dark:bg-blue-400 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                                    <span className="w-1 h-1 bg-blue-500 dark:bg-blue-400 rounded-full animate-bounce"></span>
+                                  </div>
+                                  <span className="text-[10px] font-medium text-blue-500/70 dark:text-blue-400/70 uppercase tracking-wider">
+                                    {msg.content ? '正在输出' : '正在思考'}
+                                  </span>
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            msg.content
+                          )}
+
+                          {/* Shimmer effect background when empty and loading */}
+                          {showLoading && !msg.content && (
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-50/10 dark:via-blue-900/5 to-transparent -translate-x-full animate-shimmer" />
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3 px-1">
+                          <span className="text-[10px] text-neutral-400">
+                            {format(new Date(msg.created), 'HH:mm')}
+                          </span>
+                          {msg.role === 'assistant' && msg.content && (
+                            <button
+                              onClick={() => handleCopy(msg.content, msg.id)}
+                              className="flex items-center gap-1 text-[10px] font-medium text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                            >
+                              <HugeiconsIcon
+                                icon={Copy01Icon}
+                                className={cn("h-3 w-3")}
+                              />
+                            </button>
+                          )}
+                        </div>
                       </div>
-                      <span className="text-[10px] text-neutral-400 px-1">
-                        {format(new Date(msg.created), 'HH:mm')}
-                      </span>
                     </div>
-                  </div>
-                ))}
-                {isLoading && (
-                  <div className="flex gap-4">
-                    <Avatar className="h-9 w-9 bg-blue-100 text-blue-600">
-                      <HugeiconsIcon icon={RobotIcon} className="h-5 w-5 animate-pulse" />
-                    </Avatar>
-                    <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 px-4 py-3 rounded-2xl rounded-tl-none shadow-sm">
-                      <div className="flex gap-1">
-                        <span className="w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
-                        <span className="w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
-                        <span className="w-1.5 h-1.5 bg-neutral-300 dark:bg-neutral-600 rounded-full animate-bounce"></span>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                  );
+                })}
               </div>
             </ScrollArea>
 
