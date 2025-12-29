@@ -24,6 +24,7 @@ import { AIAgents } from '@/pages/examples/AIAgents';
 import AiAssistant from '@/pages/AiAssistant/AiAssistant';
 import Companies from '@/pages/crm/Companies';
 import Opportunities from '@/pages/crm/Opportunities';
+import Contracts from '@/pages/crm/Contracts';
 import { Toaster } from 'sonner';
 
 import { ProtectedRoute, AdminOnlyRoute, UserOnlyRoute } from '@/components/protected-route';
@@ -59,6 +60,7 @@ export function App() {
                   <Route path="profile" element={<Profile />} />
                   <Route path="crm/companies" element={<Companies />} />
                   <Route path="crm/opportunities" element={<Opportunities />} />
+                  <Route path="crm/contracts" element={<Contracts />} />
                   <Route path="ai-assistant" element={<AiAssistant />} />
                   <Route path="examples/blank" element={<Blank />} />
                   <Route path="examples/dashboard" element={<ExampleDashboard />} />

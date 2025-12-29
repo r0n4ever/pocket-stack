@@ -71,6 +71,7 @@ const menuItems: MenuItem[] = [
     children: [
       { title: '客户单位', path: '/crm/companies' },
       { title: '商机管理', path: '/crm/opportunities' },
+      { title: '合同管理', path: '/crm/contracts' },
     ],
   },
   {
