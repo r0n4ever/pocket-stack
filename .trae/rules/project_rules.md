@@ -34,4 +34,18 @@
 - 主题色： `blue` 
 - 风格： `maia` 
 - 圆角： `rounded-2xl`
-- 图标库： `hugeicons`，请使用mcp选择和使用icon图标
+
+## 图标
+
+图标库： `hugeicons`，请使用mcp选择和使用icon图标
+
+图标使用方法：
+
+```typescript
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  图标名,
+  ……
+} from "@hugeicons/core-free-icons";
+ <HugeiconsIcon icon={图标名} />
+```
