@@ -18,7 +18,6 @@ import {
     Delete01Icon,
     ArrowLeft01Icon,
     ArrowRight01Icon,
-    Analytics01Icon,
 } from '@hugeicons/core-free-icons';
 import { toast } from 'sonner';
 import { OpportunityForm } from './components/OpportunityForm';

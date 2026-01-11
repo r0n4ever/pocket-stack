@@ -4,7 +4,7 @@ import { ExampleTable } from './Table';
 import { ExampleCard } from './Card';
 import { Form } from './Form';
 import { Blank } from './Blank';
-import { ProtectedRoute, AdminOnlyRoute, UserOnlyRoute } from '@/components/protected-route';
+import { ProtectedRoute } from '@/components/protected-route';
 import { MainLayout } from '@/components/layout';
 import { BlogDetail } from './BlogDetail';
 import { LandingPage } from './LandingPage';

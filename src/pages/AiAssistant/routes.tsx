@@ -2,7 +2,7 @@ import { Route } from 'react-router-dom';
 import AiAssistant from './AiAssistant';
 import { AIPlayground } from './AIPlayground';
 import { AIAgents } from './AIAgents';
-import { UserOnlyRoute, AdminOnlyRoute } from '@/components/protected-route';
+import { AdminOnlyRoute } from '@/components/protected-route';
 
 export const AiAssistantRoutes = (
   <>

@@ -1,4 +1,4 @@
-import { DatabaseIcon, AiChat02Icon, RobotIcon } from '@hugeicons/core-free-icons';
+import { AiChat02Icon } from '@hugeicons/core-free-icons';
 
 export const aiAssistantMenu = {
   title: 'AI 助手',

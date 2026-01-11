@@ -32,10 +32,7 @@ interface OpportunityFormProps {
 export function OpportunityForm({ open, onOpenChange, opportunityId, onSuccess }: OpportunityFormProps) {
     const [loading, setLoading] = useState(false);
     const [companies, setCompanies] = useState<any[]>([]);
-    const { register, handleSubmit, reset, control, setValue, watch } = useForm();
-
-    const statusValue = watch('status');
-    const companyValue = watch('company');
+    const { register, handleSubmit, reset, control } = useForm();
 
     useEffect(() => {
         if (open) {

@@ -5,16 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
   AiChat02Icon,
-  DatabaseIcon,
   CloudSavingDone02Icon,
   SecurityCheckIcon,
   ZapIcon,
   ArrowRight01Icon,
-  Tick01Icon,
   GithubIcon,
   Menu01Icon,
   WorkflowSquare01Icon,
-  UserGroupIcon,
   Layers01Icon
 } from '@hugeicons/core-free-icons';
 import { Logo } from '@/components/logo';

@@ -17,7 +17,7 @@ import { RegisterPage } from '@/pages/Register';
 import { NotFound } from '@/pages/NotFound';
 import { Toaster } from 'sonner';
 
-import { ProtectedRoute, AdminOnlyRoute, UserOnlyRoute } from '@/components/protected-route';
+import { ProtectedRoute, AdminOnlyRoute } from '@/components/protected-route';
 
 export function App() {
   return (
