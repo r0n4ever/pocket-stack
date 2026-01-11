@@ -121,7 +121,7 @@ export function BlogDetail() {
           {/* 顶部导航 */}
           <div className="flex items-center justify-between">
             <Button variant="ghost" asChild className="rounded-xl -ml-2 text-neutral-600 hover:text-blue-600 transition-colors">
-              <Link to="/portal/landing">
+              <Link to="/examples/portal/landing">
                 <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />
                 返回首页
               </Link>

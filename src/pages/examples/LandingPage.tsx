@@ -70,7 +70,7 @@ export function LandingPage() {
             <div className="hidden md:flex items-center gap-6">
               <a href="#features" className="text-sm font-medium text-neutral-600 hover:text-blue-600 transition-colors">特性</a>
               <a href="#tech-stack" className="text-sm font-medium text-neutral-600 hover:text-blue-600 transition-colors">技术栈</a>
-              <Link to="/portal/blog-detail" target="_blank" className="text-sm font-medium text-neutral-600 hover:text-blue-600 transition-colors">博客示例</Link>
+              <Link to="/examples/portal/blog-detail" target="_blank" className="text-sm font-medium text-neutral-600 hover:text-blue-600 transition-colors">博客示例</Link>
             </div>
           </div>
           <div className="flex items-center gap-3">
