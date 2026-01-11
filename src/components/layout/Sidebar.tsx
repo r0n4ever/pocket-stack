@@ -12,6 +12,7 @@ import { Logo } from '@/components/logo';
 import { taskMenu } from '@/pages/task/menu';
 import { crmMenu } from '@/pages/crm/menu';
 import { aiAssistantMenu } from '@/pages/AiAssistant/menu';
+import { portalMenu } from '@/pages/portal/menu';
 import { exampleMenu } from '@/pages/examples/menu';
 import { useAuth } from '@/components/auth-provider';
 import {
@@ -29,11 +30,13 @@ interface MenuItem {
   icon: any; // 使用 any 以兼容 Hugeicons 图标类型
   adminOnly?: boolean;
   userOnly?: boolean;
+  external?: boolean;
   children?: {
     title: string;
     path: string;
     adminOnly?: boolean;
     userOnly?: boolean;
+    external?: boolean;
   }[];
 }
 
@@ -53,6 +56,7 @@ const menuItems: MenuItem[] = [
   taskMenu,
   crmMenu,
   aiAssistantMenu,
+  portalMenu,
   exampleMenu,
   {
     title: '系统管理',
@@ -154,11 +158,13 @@ function NavItem({
   };
 
   if (!hasChildren) {
+    const linkProps = item.external ? { target: "_blank", rel: "noopener noreferrer" } : {};
     return (
       <Link
         to={item.path!}
         title={isCollapsed ? item.title : undefined}
         onClick={handleLinkClick}
+        {...linkProps}
         className={cn(
           'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
           isActive
@@ -208,20 +214,24 @@ function NavItem({
         <DropdownMenuContent side="right" align="start" sideOffset={16} className="min-w-40">
           <DropdownMenuLabel>{item.title}</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {item.children?.map((child) => (
-            <DropdownMenuItem key={child.path} asChild>
-              <Link
-                to={child.path}
-                onClick={handleLinkClick}
-                className={cn(
-                  "w-full",
-                  location.pathname === child.path && "text-blue-600 font-medium"
-                )}
-              >
-                {child.title}
-              </Link>
-            </DropdownMenuItem>
-          ))}
+          {item.children?.map((child) => {
+            const childLinkProps = child.external ? { target: "_blank", rel: "noopener noreferrer" } : {};
+            return (
+              <DropdownMenuItem key={child.path} asChild>
+                <Link
+                  to={child.path}
+                  onClick={handleLinkClick}
+                  {...childLinkProps}
+                  className={cn(
+                    "w-full",
+                    location.pathname === child.path && "text-blue-600 font-medium"
+                  )}
+                >
+                  {child.title}
+                </Link>
+              </DropdownMenuItem>
+            );
+          })}
         </DropdownMenuContent>
       </DropdownMenu>
     );
@@ -263,11 +273,13 @@ function NavItem({
         <div className="space-y-1">
           {item.children?.map((child) => {
             const isChildActive = location.pathname === child.path;
+            const childLinkProps = child.external ? { target: "_blank", rel: "noopener noreferrer" } : {};
             return (
               <Link
                 key={child.path}
                 to={child.path}
                 onClick={handleLinkClick}
+                {...childLinkProps}
                 className={cn(
                   'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200',
                   isChildActive
