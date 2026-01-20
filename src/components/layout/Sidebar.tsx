@@ -3,12 +3,11 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  ChartLineData01Icon,
   ArrowDown01Icon,
-  Settings01Icon,
 } from '@hugeicons/core-free-icons';
 import { Logo } from '@/components/logo';
 import { exampleMenu } from '@/pages/examples/menu';
+import { adminMenu } from '@/pages/admin/menu';
 import { useAuth } from '@/components/auth-provider';
 import {
   DropdownMenu,
@@ -36,23 +35,8 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  {
-    title: '仪表盘',
-    path: '/admin/dashboard',
-    icon: ChartLineData01Icon,
-    adminOnly: true,
-  },
+  ...adminMenu,
   exampleMenu,
-  {
-    title: '系统管理',
-    icon: Settings01Icon,
-    adminOnly: true,
-    children: [
-      { title: '全局配置', path: '/admin/settings' },
-      { title: '用户管理', path: '/admin/users' },
-      { title: '系统初始化', path: '/admin/install' },
-    ],
-  },
 ];
 
 interface SidebarProps {
