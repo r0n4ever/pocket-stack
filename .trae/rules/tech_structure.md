@@ -1,12 +1,3 @@
-# 全栈开发框架
-
-## 后端
-
-- 采用 pocketbase 实现后端认证和接口服务。
-- 请使用mcp操作 pocketbase
-- 普通用户账号密码：demo@example.com / demo1234
-- 管理员账号密码：admin@example.com / admin123
-
 ## 开发规则
 
 公共组件：
@@ -24,30 +15,3 @@
 - 菜单：菜单设置位于`src/pages/{module}/menu.ts`文件
 - 路由：路由设置位于`src/pages/{module}/routes.ts`文件，页面的访问路径为 `/{module}/{page}`
 - 后端：后端模型collection命名以模块名为前缀，例如 `{module}_subPageName`。
-
-## 前端风格
-
-页面示例：请参考 `src/pages/examples/` 中的示例文件，保持页面一致性。
-
-风格规则：
-- 组件库： `shadcn/ui`，请使用mcp操作添加组件
-- 主题色： `blue` 
-- 风格： `maia` 
-- 圆角： `rounded-2xl`
-
-## 图标
-
-图标库： `hugeicons`。
-
-**一定要使用mcp选择图标，以确保图标可用。**
-
-图标使用方法：
-
-```typescript
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  图标名,
-  ……
-} from "@hugeicons/core-free-icons";
- <HugeiconsIcon icon={图标名} />
-```
