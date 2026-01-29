@@ -9,12 +9,11 @@ import { Separator } from '@/components/ui/separator';
 import type { Post } from '../types';
 import { STATUS_OPTIONS } from '../types';
 import { format, parseISO } from 'date-fns';
-import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  User02Icon,
-  Calendar01Icon,
-  Folder01Icon,
-} from '@hugeicons/core-free-icons';
+  UserIcon,
+  CalendarIcon,
+  FolderIcon,
+} from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 
 interface PostDetailDrawerProps {
@@ -45,15 +44,15 @@ export function PostDetailDrawer({
 
           <div className="flex flex-wrap gap-4 text-sm text-neutral-500">
             <div className="flex items-center gap-1">
-              <HugeiconsIcon icon={User02Icon} className="h-4 w-4" />
+              <UserIcon className="h-4 w-4" />
               {post.author}
             </div>
             <div className="flex items-center gap-1">
-              <HugeiconsIcon icon={Folder01Icon} className="h-4 w-4" />
+              <FolderIcon className="h-4 w-4" />
               {post.category}
             </div>
             <div className="flex items-center gap-1">
-              <HugeiconsIcon icon={Calendar01Icon} className="h-4 w-4" />
+              <CalendarIcon className="h-4 w-4" />
               {post.created ? format(parseISO(post.created), 'yyyy-MM-dd HH:mm') : '-'}
             </div>
           </div>

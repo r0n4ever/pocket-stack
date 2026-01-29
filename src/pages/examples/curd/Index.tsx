@@ -10,18 +10,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { HugeiconsIcon } from '@hugeicons/react';
 import {
-  Search01Icon,
-  FilterIcon,
-  PencilEdit01Icon,
-  Delete01Icon,
-  PlusSignIcon,
-  ArrowLeft01Icon,
-  ArrowRight01Icon,
-  Sorting05Icon,
-  ViewIcon,
-} from '@hugeicons/core-free-icons';
+  PlusIcon,
+  MagnifyingGlassIcon,
+  FunnelIcon,
+  ChevronUpDownIcon,
+  EyeIcon,
+  PencilSquareIcon,
+  TrashIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from '@heroicons/react/24/outline';
 import { pb } from '@/lib/pocketbase';
 import type { Post, PostStatus } from './types';
 import { STATUS_OPTIONS } from './types';
@@ -174,7 +173,7 @@ export default function CurdExample() {
           </p>
         </div>
         <Button onClick={handleCreate} className="bg-blue-600 hover:bg-blue-700">
-          <HugeiconsIcon icon={PlusSignIcon} className="mr-2 h-4 w-4" />
+          <PlusIcon className="mr-2 h-4 w-4" />
           创建文章
         </Button>
       </div>
@@ -183,8 +182,7 @@ export default function CurdExample() {
       <div className="bg-white dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-800 p-3 rounded-2xl">
         <div className="flex flex-wrap gap-4">
           <div className="relative flex-1 min-w-[240px]">
-            <HugeiconsIcon
-              icon={Search01Icon}
+            <MagnifyingGlassIcon
               className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400"
             />
             <Input
@@ -207,7 +205,7 @@ export default function CurdExample() {
             }}
           >
             <SelectTrigger id="filter-status" className="w-[180px]">
-              <HugeiconsIcon icon={FilterIcon} className="mr-2 h-4 w-4 text-neutral-400" />
+              <FunnelIcon className="mr-2 h-4 w-4 text-neutral-400" />
               <SelectValue placeholder="所有状态" />
             </SelectTrigger>
             <SelectContent>
@@ -255,7 +253,7 @@ export default function CurdExample() {
                   >
                     <div className="flex items-center gap-1">
                       标题
-                      <HugeiconsIcon icon={Sorting05Icon} className="h-3 w-3" />
+                      <ChevronUpDownIcon className="h-3 w-3" />
                     </div>
                   </th>
                   <th className="pb-3 text-left text-sm font-medium text-neutral-600 dark:text-neutral-400">
@@ -273,7 +271,7 @@ export default function CurdExample() {
                   >
                     <div className="flex items-center gap-1">
                       创建时间
-                      <HugeiconsIcon icon={Sorting05Icon} className="h-3 w-3" />
+                      <ChevronUpDownIcon className="h-3 w-3" />
                     </div>
                   </th>
                   <th className="pb-3 text-right text-sm font-medium text-neutral-600 dark:text-neutral-400">
@@ -325,7 +323,7 @@ export default function CurdExample() {
                             onClick={() => handleView(post)}
                             className="h-8 w-8 text-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                           >
-                            <HugeiconsIcon icon={ViewIcon} className="h-4 w-4" />
+                            <EyeIcon className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
@@ -333,7 +331,7 @@ export default function CurdExample() {
                             onClick={() => handleEdit(post)}
                             className="h-8 w-8 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                           >
-                            <HugeiconsIcon icon={PencilEdit01Icon} className="h-4 w-4" />
+                            <PencilSquareIcon className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="ghost"
@@ -341,7 +339,7 @@ export default function CurdExample() {
                             onClick={() => handleDelete(post.id)}
                             className="h-8 w-8 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
                           >
-                            <HugeiconsIcon icon={Delete01Icon} className="h-4 w-4" />
+                            <TrashIcon className="h-4 w-4" />
                           </Button>
                         </div>
                       </td>
@@ -366,7 +364,7 @@ export default function CurdExample() {
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage(currentPage - 1)}
                 >
-                  <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-1 h-4 w-4" />
+                  <ChevronLeftIcon className="mr-1 h-4 w-4" />
                   上一页
                 </Button>
                 <div className="hidden sm:flex items-center gap-1">
@@ -397,7 +395,7 @@ export default function CurdExample() {
                   onClick={() => setCurrentPage(currentPage + 1)}
                 >
                   下一页
-                  <HugeiconsIcon icon={ArrowRight01Icon} className="ml-1 h-4 w-4" />
+                  <ChevronRightIcon className="ml-1 h-4 w-4" />
                 </Button>
               </div>
             </div>
