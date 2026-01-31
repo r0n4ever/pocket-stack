@@ -30,6 +30,17 @@ import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { toast } from 'sonner';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
 const COLLECTION_NAME = 'examples_posts';
 
 export default function CurdExample() {
@@ -37,6 +48,10 @@ export default function CurdExample() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  // --- 确认弹窗状态 ---
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   // --- 筛选/分页/排序状态 ---
   const [search, setSearch] = useState('');
@@ -124,15 +139,23 @@ export default function CurdExample() {
     setDetailDrawerOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('确定要删除这篇文章吗？')) return;
+  const handleDeleteClick = (id: string) => {
+    setDeleteTargetId(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
 
     try {
-      await pb.collection(COLLECTION_NAME).delete(id);
+      await pb.collection(COLLECTION_NAME).delete(deleteTargetId);
       toast.success('删除成功');
       fetchPosts();
     } catch (error) {
       toast.error('删除失败');
+    } finally {
+      setDeleteConfirmOpen(false);
+      setDeleteTargetId(null);
     }
   };
 
@@ -336,7 +359,7 @@ export default function CurdExample() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => handleDelete(post.id)}
+                            onClick={() => handleDeleteClick(post.id)}
                             className="h-8 w-8 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
                           >
                             <TrashIcon className="h-4 w-4" />
@@ -417,6 +440,23 @@ export default function CurdExample() {
         onOpenChange={setDetailDrawerOpen}
         post={currentPost}
       />
+
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确定要删除这篇文章吗？</AlertDialogTitle>
+            <AlertDialogDescription>
+              此操作不可撤销。删除后，该文章将永久从系统中移除。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+              确定删除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -18,6 +18,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import {
   Popover,
@@ -95,6 +105,10 @@ export function ExampleTable() {
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [formData, setFormData] = useState<Partial<Order>>({});
 
+  // AlertDialog State
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
   // --- Derived Data ---
   const filteredAndSortedOrders = useMemo(() => {
     return orders
@@ -166,9 +180,16 @@ export function ExampleTable() {
     setIsDialogOpen(false);
   };
 
-  const handleDelete = (id: string) => {
-    if (confirm('确定要删除此订单吗？')) {
-      setOrders(orders.filter((o) => o.id !== id));
+  const handleDeleteClick = (id: string) => {
+    setDeleteTargetId(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (deleteTargetId) {
+      setOrders(orders.filter((o) => o.id !== deleteTargetId));
+      setDeleteConfirmOpen(false);
+      setDeleteTargetId(null);
     }
   };
 
@@ -374,7 +395,7 @@ export function ExampleTable() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleDelete(order.id)}
+                          onClick={() => handleDeleteClick(order.id)}
                           className="h-8 w-8 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
                         >
                           <TrashIcon className="h-4 w-4" />
@@ -522,6 +543,23 @@ export function ExampleTable() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确定要删除此订单吗？</AlertDialogTitle>
+            <AlertDialogDescription>
+              此操作不可撤销。删除后，该订单将从本地模拟数据中移除。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+              确定删除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

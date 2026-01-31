@@ -27,6 +27,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { toast } from 'sonner';
 
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -60,6 +71,8 @@ export function Users() {
   // Dialog state
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserRecord | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: '',
@@ -173,28 +186,38 @@ export function Users() {
 
       if (editingUser) {
         await pb.collection('users').update(editingUser.id, data);
+        toast.success('更新成功');
       } else {
         data.append('email', formData.email);
         data.append('emailVisibility', 'true');
         await pb.collection('users').create(data);
+        toast.success('创建成功');
       }
       setIsDialogOpen(false);
       fetchUsers();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save user:', error);
-      alert('保存失败，请检查输入或权限');
+      toast.error(error.message || '保存失败，请检查输入或权限');
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm('确定要删除该用户吗？')) {
-      try {
-        await pb.collection('users').delete(id);
-        fetchUsers();
-      } catch (error) {
-        console.error('Failed to delete user:', error);
-        alert('删除失败');
-      }
+  const handleDeleteClick = (id: string) => {
+    setDeleteTargetId(id);
+    setDeleteConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTargetId) return;
+    try {
+      await pb.collection('users').delete(deleteTargetId);
+      toast.success('删除成功');
+      fetchUsers();
+    } catch (error: any) {
+      console.error('Failed to delete user:', error);
+      toast.error(error.message || '删除失败');
+    } finally {
+      setDeleteConfirmOpen(false);
+      setDeleteTargetId(null);
     }
   };
 
@@ -337,7 +360,7 @@ export function Users() {
                     variant="ghost"
                     size="sm"
                     className="flex-1 h-8 text-[11px] text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30"
-                    onClick={() => handleDelete(user.id)}
+                    onClick={() => handleDeleteClick(user.id)}
                   >
                     <TrashIcon className="mr-1.5 h-3.5 w-3.5" />
                     删除
@@ -501,6 +524,23 @@ export function Users() {
           </form>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确定要删除该用户吗？</AlertDialogTitle>
+            <AlertDialogDescription>
+              此操作不可撤销。该用户的所有关联数据也将受到影响。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
+              确定删除
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
