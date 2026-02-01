@@ -2,6 +2,8 @@
 
 2026年，最好的技术方案就是最“AI友好”的技术方案。这是一套AI友好的前后端技术栈，结合规则提示词和MCP等技术，打造一个非专业人员可用的 Vibe Coding 开发环境。为“就缺一个程序员”的你提供一个阿拉丁神灯般的开发平台。
 
+基于 React + shadcn/ui + PocketBase + MCP 等技术，实现完整、流畅的全栈 Vibe Coding 开发体验。
+
 简体中文 | [English](README_en.md)
 
 ![Pocket Stack 示例页面](docs/assets/screenshot-admin.png)
