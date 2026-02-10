@@ -9,3 +9,5 @@
 - CURD：`src/modules/examples/Curd/`
 - 落地页（游客访问）：`src/modules/examples/LandingPage.tsx`
 - 博客详情（游客访问）：`src/modules/examples/BlogDetail.tsx`
+- 菜单：`src/modules/examples/menu.ts`
+- 路由：`src/modules/examples/routes.tsx`

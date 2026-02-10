@@ -15,6 +15,7 @@ export const routes = (
   <>
     {/* 需要登录访问的路由 */}
     <Route element={<ProtectedRoute />}>
+      {/** 后台管理框架布局，需要嵌套在 MainLayout 下 */}
       <Route path="/" element={<MainLayout />}>
         <Route path="examples/dashboard" element={<ExampleDashboard />} />
         <Route path="examples/blank" element={<Blank />} />
@@ -27,8 +28,7 @@ export const routes = (
         <Route path="blog-detail" element={<BlogDetail />} />
       </Route>
     </Route>
-    {/* 公开访问的路由，由于目前 autoRoutes 都在 MainLayout 下，
-        如果需要脱离布局，可能需要后续调整 App.tsx 的加载机制 */}
+    {/* 无需后台框架布局的页面 */}
     <Route path="examples/portal/landing" element={<LandingPage />} />
     <Route path="examples/portal/blog-detail" element={<BlogDetail />} />
   </>
