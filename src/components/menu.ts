@@ -10,12 +10,14 @@ export interface MenuItem {
     adminOnly?: boolean;
     userOnly?: boolean;
     external?: boolean;
+    show?: boolean; // 是否显示，默认为 true
     children?: {
         title: string;
         path: string;
         adminOnly?: boolean;
         userOnly?: boolean;
         external?: boolean;
+        show?: boolean; // 是否显示，默认为 true
     }[];
 }
 
@@ -24,14 +26,35 @@ const moduleMenus = import.meta.glob(['../modules/*/menu.ts'], { eager: true });
 const autoMenus: MenuItem[] = Object.values(moduleMenus).flatMap((mod: any) => {
     // 支持 export const menu = ... 或 export default ...
     const menu = mod.menu || mod.default;
-    return Array.isArray(menu) ? menu : [menu];
+    const items = Array.isArray(menu) ? menu : [menu];
+
+    // 过滤掉 show === false 的菜单项及其子菜单
+    return items.filter(item => item && item.show !== false).map(item => {
+        if (item.children) {
+            return {
+                ...item,
+                children: item.children.filter((child: any) => child.show !== false)
+            };
+        }
+        return item;
+    });
 }).filter(Boolean);
 
 /**
  * 全局侧边栏菜单配置
- * 组合了各个模块的菜单
+ * 组合了各个模块的菜单，并应用全局显示过滤逻辑
  */
-export const menuItems: MenuItem[] = [
+const allMenus: MenuItem[] = [
     ...adminMenu,
     ...autoMenus,
 ];
+
+export const menuItems: MenuItem[] = allMenus.filter(item => item && item.show !== false).map(item => {
+    if (item.children) {
+        return {
+            ...item,
+            children: item.children.filter(child => child.show !== false)
+        };
+    }
+    return item;
+});

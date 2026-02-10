@@ -25,8 +25,9 @@ export const menu = {
   title: '模块名称',
   icon: ChartBarIcon,
   path: '/module/', // 可选
+  show: true,       // 可选，是否在侧边栏显示，默认为 true
   children: [ // 可选
-    { title: '子页面', path: '/sub-path' }
+    { title: '子页面', path: '/sub-path', show: true }
   ],
   adminOnly: true, // 可选，仅超级管理员可见
   userOnly: true   // 可选，仅普通用户可见
