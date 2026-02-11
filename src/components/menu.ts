@@ -11,6 +11,7 @@ export interface MenuItem {
     userOnly?: boolean;
     external?: boolean;
     show?: boolean; // 是否显示，默认为 true
+    activePath?: string; // 手动指定激活路径匹配模式（正则表达式或前缀）
     children?: {
         title: string;
         path: string;

@@ -24,7 +24,8 @@ import { ChartBarIcon } from '@heroicons/react/24/outline';
 export const menu = {
   title: '模块名称',
   icon: ChartBarIcon,
-  path: '/module/', // 可选
+  path: '/module/list', 
+  activePath: '^/module/', // 可选，手动指定菜单激活的路径匹配规则（正则或前缀）
   show: true,       // 可选，是否在侧边栏显示，默认为 true
   children: [ // 可选
     { title: '子页面', path: '/sub-path', show: true }
