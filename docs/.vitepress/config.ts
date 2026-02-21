@@ -48,6 +48,7 @@ export default {
         items: [
           { text: '演示模块说明', link: '/demos/index' },
           { text: '口袋笔记', link: '/demos/notes' },
+          { text: '口袋看板', link: '/demos/kanban' },
         ]
       },
     ]
