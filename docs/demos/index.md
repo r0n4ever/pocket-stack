@@ -1,6 +1,6 @@
 # 演示模块 (Demos) 安装与使用指南
 
-Pocket Stack 提供了一系列演示模块，都是采用 Vibe Coding，在一天甚至更短时间内开发完成的。这些模块包括笔记、看板、AI对话助手、OKR等，可以独立部署，也可以集成到一个工程中。为了保持代码库的轻量和专注，这些模块并未直接包含在主分支 (`main`) 中，而是分布在独立的 `demo/*` 分支上。
+Pocket Stack 提供了一系列演示模块，都是采用 `Vibe Coding`，在一天甚至更短时间内开发完成的。这些模块包括笔记、看板、AI对话助手、OKR等，可以独立部署，也可以集成到一个工程中。为了保持代码库的轻量和专注，这些模块并未直接包含在主分支 (`main`) 中，而是分布在独立的 `demo/*` 分支上。
 
 你可以通过切换 Git 分支来体验不同的演示模块。
 
@@ -18,31 +18,18 @@ Pocket Stack 提供了一系列演示模块，都是采用 Vibe Coding，在一�
 
 ## 2. 安装与切换步骤
 
-### 2.1 准备工作
+### 2.1 克隆项目
 
-在切换分支之前，请确保你当前的工作区是干净的（已提交或已暂存），以免代码冲突或丢失。
+首先，克隆 Pocket Stack 仓库到本地：
 
 ```bash
-# 查看当前状态
-git status
-
-# 如果有未提交的更改，请先提交或暂存
-git add .
-git commit -m "Backup current work"
-# 或者
-git stash
+git clone https://github.com/yourusername/pocket-stack.git
+cd pocket-stack
 ```
 
 ### 2.2 切换分支
 
 使用 `git checkout` 命令切换到你想要体验的模块分支。
-
-**示例：切换到笔记模块**
-
-```bash
-git fetch origin
-git checkout demo/notes
-```
 
 **示例：切换到看板模块**
 
